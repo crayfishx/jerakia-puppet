@@ -7,8 +7,8 @@ This gem provides the data binding library for Puppet to lookup data over the Je
 ## Installation
 
 ```
-# /opt/puppetlabs/puppet/bin/gem install jerakia-puppet
-# /opt/puppetlabs/bin/puppetserver gem install jerakia-puppet
+# /opt/puppetlabs/puppet/bin/gem install puppet-databinding-jerakiaserver
+# /opt/puppetlabs/bin/puppetserver gem install puppet-databinding-jerakiaserver
 ```
 
 ## Usage
