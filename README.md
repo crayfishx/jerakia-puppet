@@ -17,7 +17,7 @@ Edit `puppet.conf` and set the `data_binding_terminus` to `jerakiaserver`
 
 ```
 [main]
-data_binding_terminus = jerakia
+data_binding_terminus = jerakiaserver
 ```
 
 
