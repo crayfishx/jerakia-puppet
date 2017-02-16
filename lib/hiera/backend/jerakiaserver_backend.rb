@@ -4,10 +4,9 @@ require 'jerakia/client'
 
 class Hiera
   module Backend
-    class Jerakia_backend
+    class Jerakiaserver_backend
 
       def initialize(config = nil)
-        require 'jerakia'
         @config = config || Hiera::Config[:jerakia] || {}
         @jerakia = ::Jerakia::Client.new
         @scope_cache = {}
@@ -81,7 +80,7 @@ class Hiera
           :namespace => namespace,
           :scope => 'server',
           :lookup_type => lookup_type.to_s,
-          :merge_type  => merge_type.to_s,
+          :merge  => merge_type.to_s,
           :scope_opts => {
             'identifier' => identifier,
             'realm' => 'puppet'
@@ -97,7 +96,18 @@ class Hiera
 
         if lookup.is_a?(Hash)
           raise Puppet::Error, "Jerakia data lookup failed #{lookup['message']}" unless lookup['status'] = 'ok'
-          return lookup['payload']
+
+          payload = lookup['payload']
+          case resolution_type
+          when :array
+            return [] if payload.nil?
+            return payload
+          when :hash
+            return {} if payload.nil?
+            return payload
+          else
+            return payload
+          end
         else
           raise Puppet::Error, "Jerakia data lookup failed Expected a hash but got a #{lookup.class}"
         end
