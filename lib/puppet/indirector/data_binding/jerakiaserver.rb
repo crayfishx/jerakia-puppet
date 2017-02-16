@@ -1,7 +1,6 @@
 require 'puppet/indirector/code'
 require 'jerakia/client'
 require 'json'
-require 'digest/md5'
 
 class Puppet::DataBinding::Jerakiaserver < Puppet::Indirector::Code
 
@@ -17,19 +16,10 @@ class Puppet::DataBinding::Jerakiaserver < Puppet::Indirector::Code
     super
   end
 
-  def server_scope(identifier)
-    returndata = jerakia.get_scope_uuid('puppet', identifier)
-    if returndata.is_a?(Hash)
-      return returndata['uuid']
-    else
-      return nil
-    end
-  end
-
   def store_scope(identifier, uuid, scope)
     @scope_cache[identifier] = {
       :uuid => uuid,
-      :md5  => Digest::MD5.hexdigest(scope.to_s)
+      :scope  => scope
     }
   end
 
@@ -38,29 +28,11 @@ class Puppet::DataBinding::Jerakiaserver < Puppet::Indirector::Code
     store_scope(identifier, returndata['uuid'], scope)
   end
 
-  def scope_valid?(identifier, scope)
-    uuid = server_scope(identifier)
-
-    # If the server doesn't have a copy, refresh
-    return false unless uuid
-
-    if scope_cache[identifier]
-      # If the UUID is different we need to refresh
-      return false unless scope_cache[identifier][:uuid] == uuid
-
-      # If the MD5 sum of the scope has changed, we are probably in a new
-      # puppet run and need to refresh the scope.
-      return false unless scope_cache[identifier][:md5] == Digest::MD5.hexdigest(scope.to_s)
-    else
-
-      # If the scope is not cached at all then we should refresh
-      return false
-    end
+  def scope_valid?(identifier, metadata)
+    return false unless @scope_cache.include?(identifier)
+    return false unless @scope_cache[identifier][:scope] == metadata
     return true
   end
-
-
-
 
   def find(request)
 
@@ -73,10 +45,13 @@ class Puppet::DataBinding::Jerakiaserver < Puppet::Indirector::Code
     namespace=lookupdata.join('/')
     metadata =  request.options[:variables].to_hash.reject { |k, v| v.is_a?(Puppet::Resource) }
 
-    # If the scope is unchanged assume this is part of the same puppet run and don't resend
-    # otherwise we need to send the scope to Jerakia server ahead of time.
-    #
-    identifier = metadata['trusted']['certname']
+    # If we are on an earlier version of Puppet that doesn't have trusted facts,
+    # use the fqdn fact to identify us. Puppet 4 uses trusted.
+    if metadata['trusted']
+      identifier = metadata['trusted']['certname']
+    else
+      identifier = metadata['fqdn']
+    end
 
     send_scope(identifier, metadata) unless scope_valid?(identifier, metadata)
 
@@ -89,12 +64,20 @@ class Puppet::DataBinding::Jerakiaserver < Puppet::Indirector::Code
       }
     }
 
-    lookup = jerakia.lookup(key, lookup_options)
+    begin
+      lookup = jerakia.lookup(key, lookup_options)
+    rescue Jerakia::Client::ScopeNotFoundError => e
+      send_scope(identifier, metadata)
+      lookup = jerakia.lookup(key, lookup_options)
+    rescue => e
+      raise Puppet::DataBinding::LookupError.new("Jerakia data lookup failed #{e.class}", e.message)
+    end
+
     if lookup.is_a?(Hash)
       raise Puppet::DataBinding::LookupError.new("Jerakia data lookup failed", lookup['message']) unless lookup['status'] = 'ok'
       return lookup['payload']
     else
-      raise Puppet::DataBinding::LookupError.new("Jerakia data lookup failed", "Unknown reason")
+      raise Puppet::DataBinding::LookupError.new("Jerakia data lookup failed", "Expected a hash but got a #{lookup.class}")
     end
   end
 end
