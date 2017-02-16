@@ -2,7 +2,7 @@ require 'rake'
 
 Gem::Specification.new do |s|
   s.name       = 'puppet-databinding-jerakiaserver'
-  s.version    = '0.1.0'
+  s.version    = '0.2.0'
   s.date       = %x{ /bin/date '+%Y-%m-%d' }
   s.summary    = 'Puppet databding for Jerakia Server'
   s.description    = 'Puppet databinding for Jerakia Server using the Jerakia client libraries'
