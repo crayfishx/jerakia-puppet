@@ -6,9 +6,9 @@ class Hiera
   module Backend
     class Jerakiaserver_backend
 
-      def initialize(config = nil)
-        @config = config || Hiera::Config[:jerakia] || {}
-        @jerakia = ::Jerakia::Client.new
+      def initialize()
+        @config = Hiera::Config[:jerakia] || {}
+        @jerakia = ::Jerakia::Client.new(@config)
         @scope_cache = {}
       end
 
