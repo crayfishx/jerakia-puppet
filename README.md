@@ -1,6 +1,7 @@
 # jerakia-puppet
 
-## Summary
+## Summary
+
 
 This gem provides the legacy data binding libraries and Hiera 3 backends for Puppet to lookup data via Jerakia directly using Ruby bindings or  over the Jerakia Server REST API using the [Jerakia client](https://github.com/crayfishx/jerakia-client) library
 
