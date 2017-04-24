@@ -17,6 +17,7 @@ class Puppet::DataBinding::Jerakia < Puppet::Indirector::Code
   def find(request)
     lookupdata = request.key.split(/::/)
     key = lookupdata.pop
+    return {} if key = 'lookup_options'
     namespace = lookupdata
     metadata = request.options[:variables].to_hash.reject { |_k, v| v.is_a?(Puppet::Resource) }
     policy = metadata['jerakia_policy'] || @default_policy

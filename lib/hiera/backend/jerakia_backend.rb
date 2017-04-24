@@ -13,6 +13,7 @@ class Hiera
       end
 
       def lookup(key, scope, _order_override, resolution_type)
+        return {} if key == 'lookup_options'
         lookup_type = :first
         merge_type = :none
 
@@ -36,11 +37,11 @@ class Hiera
         Jerakia.log.debug("[hiera] backend invoked for key #{key} using namespace #{namespace}")
 
         metadata = {}
-        metadata = if scope.is_a?(Hash)
-                     scope.reject { |_k, v| v.is_a?(Puppet::Resource) }
-                   else
-                     scope.real.to_hash.reject { |_k, v| v.is_a?(Puppet::Resource) }
-                   end
+        if scope.is_a?(Hash)
+          metadata = scope.reject { |_k, v| v.is_a?(Puppet::Resource) }
+        else
+          metadata = scope.real.to_hash.reject { |_k, v| v.is_a?(Puppet::Resource) }
+        end
 
         request = Jerakia::Request.new(
           :key         => key,
