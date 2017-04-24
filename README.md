@@ -35,10 +35,10 @@ A `data_binding_terminus` is ruby code that is called directly from Puppet and i
 
 Jerakia ships with a terminus called `jerakia` that is a drop-in replacement for the current `hiera` one and can be enabled by configuring the following in `puppet.conf`
 
-{% highlight bash %}
+```bash
 [main]
 data_binding_terminus = jerakia
-{% endhighlight %}
+```
 
 In order for this terminus to work, the Jerakia ruby libraries must be loadable from Puppet.  If you have installed Jerakia from the AIO system packages, you will need to also add the gem to Puppets' ruby in order to use this implementation.
 
@@ -49,9 +49,9 @@ If you have installed Jerakia 1.2+ from the AIO system package, and do not want 
 In order to use this terminus, the `puppet-databinding-jerakiaserver` rubygem must be loadable from Puppets' Ruby 
 
 It can be configured in `puppet.conf` with
-{% highlight bash %}
+```bash
 data_binding_terminus = jerakiaserver
-{% endhighlight %}
+```
 
 Note that the `data_binding_terminus` feature of Puppet is being deprecated and is expected to be removed in Puppet 6.0
 
@@ -59,18 +59,18 @@ Note that the `data_binding_terminus` feature of Puppet is being deprecated and 
 
 Jerakia ships with a Hiera 3.x backend that loads Jerakia directly and passes lookup requests. It has slightly slower performance than using the data binding terminus but otherwise operates transparently.  To enable the Jerakia Hiera backend you need to have the Jerakia gem loadable from Puppets' ruby path.  It can be configured simply with;
 
-{% highlight yaml %}
+```yaml
 ---
 :backends:
   - jerakia
-{% endhighlight %}
+```
 
 Optional configuration can be given as a hash named `:jerakia`....
 
-{% highlight yaml %}
+```yaml
 :jerakia:
   :config: /etc/puppetlabs/code/jerakia.yaml
-{% endhighlight %}
+```
 
 See [configuring jerakia](/basics/configure) for acceptable configuration parameters.
 
