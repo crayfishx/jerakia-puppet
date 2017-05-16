@@ -1,8 +1,10 @@
 before_install:
   - git clone https://github.com/crayfishx/jerakia
-  - ln -s ./jerakia/Rakefile ./Rakefile
-  - (cd jerakia && bundle install)
+  - ln -s jerakia/jerakia-puppet .
+  - bundle install --gemfile jerakia/Gemfile
 
+
+script: ( cd jerakia && bundle exec rake )
 
 language: ruby
 rvm:
