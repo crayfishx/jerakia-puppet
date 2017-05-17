@@ -1,5 +1,6 @@
 require 'puppet'
 require 'puppet/resource'
+require 'msgpack'
 
 class Hiera
   module Backend
@@ -38,9 +39,9 @@ class Hiera
 
         metadata = {}
         if scope.is_a?(Hash)
-          metadata = scope.reject { |_k, v| v.is_a?(Puppet::Resource) }
+          metadata = MessagePack.unpack(scope.to_msgpack)
         else
-          metadata = scope.real.to_hash.reject { |_k, v| v.is_a?(Puppet::Resource) }
+          metadata = MessagePack.unpack(scope.real.to_hash.to_msgpack)
         end
 
         request = Jerakia::Request.new(
