@@ -1,11 +1,6 @@
 before_install:
   - git clone https://github.com/crayfishx/jerakia
-  - ln -s jerakia/jerakia-puppet .
-
-
-script:
-  - cd jerakia
-  - rake integration_tests
+  - ln -s jerakia/test ./test
 
 language: ruby
 rvm:
@@ -15,8 +10,6 @@ rvm:
   - 2.2
 
 env:
- global:
-   - BUNDLE_GEMFILE=jerakia/Gemfile
  matrix:
 #    - PUPPET_GEM_VERSION="~> 3.6.2"
 #    - PUPPET_GEM_VERSION="~> 3.7.0"
