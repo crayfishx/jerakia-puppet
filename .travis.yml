@@ -5,7 +5,7 @@ before_install:
 
 script:
   - cd jerakia
-  - bundle exec rake integration_tests
+  - rake integration_tests
 
 language: ruby
 rvm:
