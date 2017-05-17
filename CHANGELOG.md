@@ -1,3 +1,6 @@
+## 0.5.0
+
+* Use MessagePack to serialize/deserialize the scope from Hiera to ensure that `Puppet::Resource` objects don't get sent
 
 ### 0.4.1
 
